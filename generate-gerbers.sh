@@ -2,11 +2,11 @@
 
 # https://github.com/snhobbs/kicad-make/blob/0256edc46bfc10a185658dce7bf5963997f3f1dc/Makefile#L10
 
-NAME=dc-motor-driver-adapter
-REVISION=revision-2
+NAME=dcesc-ga25
+REVISION=dcesc-ga25
 DIST=dist/$REVISION
 
-BOARD=board/$REVISION/$NAME.kicad_pcb
+BOARD=boards/$REVISION/$NAME.kicad_pcb
 
 mkdir -p $DIST
 rm -rf $DIST/*
@@ -14,7 +14,7 @@ rm -rf $DIST/*
 # Gerbers: Top, Bottom, Paste (top only), Mask, Edge
 mkdir -p $DIST/gerbers
 kicad-cli pcb export gerbers \
-    --subtract-soldermask --no-x2 --layers "F.Cu,B.Cu,Edge.Cuts,F.Paste,F.Mask,B.Mask,B.Silkscreen" \
+    --subtract-soldermask --no-x2 --layers "F.Cu,In1.Cu,In2.Cu,B.Cu,Edge.Cuts,F.Paste,F.Mask,B.Mask,B.Silkscreen" \
     -o $DIST/gerbers $BOARD
 
 # Drill files: Drill, Drill map
@@ -22,7 +22,6 @@ kicad-cli pcb export drill \
     --format excellon --excellon-units mm -o $DIST/gerbers/ $BOARD
 
 zip -rj $DIST/$NAME-gerbers.zip $DIST/gerbers/*.[gd]*
-rm -rf $DIST/gerbers
 
 cp board/$REVISION/docs/$NAME.txt $DIST/$NAME.txt
 
@@ -66,7 +65,6 @@ inkscape $DIST/assembly/$NAME-Top.svg \
 # inkscape $DIST/assembly/$NAME-Top.svg \
 #     -w 1024 -D -o $DIST/assembly/$NAME-Top.png --export-background-opacity=1.0 > /dev/null 2> /dev/null
 
-rm $DIST/assembly/$NAME-Top.svg
 
 # kicad-cli pcb export svg --exclude-drawing-sheet --mirror \
 #     --layers "Edge.Cuts,B.Fab" --output $DIST/assembly/$NAME-Bottom.svg $BOARD
@@ -83,14 +81,13 @@ rm $DIST/assembly/$NAME-Top.svg
 cp board/docs/$NAME.png $DIST/assembly/$NAME.png
 
 zip -rj $DIST/$NAME-assembly.zip $DIST/assembly/*
-rm -rf $DIST/assembly
 
 
 
 # Check files
 mkdir -p $DIST/check
 
-for L in F.Cu B.Cu
+for L in F.Cu In1.Cu In2.Cu B.Cu
 do
 
 kicad-cli pcb export svg --exclude-drawing-sheet \
@@ -102,7 +99,12 @@ inkscape $DIST/check/$NAME-$L.svg \
 done
 
 zip -rj $DIST/$NAME-check.zip $DIST/check/*
-rm -rf $DIST/check
+
+
+#rm -rf $DIST/gerbers
+# rm -rf $DIST/check
+# rm $DIST/assembly/$NAME-Top.svg
+#rm -rf $DIST/assembly
 
 # mkdir -p $DIST/check/3dshapes
 # kicad-cli pcb export vrml \

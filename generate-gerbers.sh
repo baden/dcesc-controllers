@@ -6,7 +6,8 @@ NAME=dcesc-ga25
 REVISION=dcesc-ga25
 DIST=dist/$REVISION
 
-BOARD=boards/$REVISION/$NAME.kicad_pcb
+BOARD_PATH=boards/$REVISION
+BOARD=$BOARD_PATH/$NAME.kicad_pcb
 
 mkdir -p $DIST
 rm -rf $DIST/*
@@ -23,7 +24,7 @@ kicad-cli pcb export drill \
 
 zip -rj $DIST/$NAME-gerbers.zip $DIST/gerbers/*.[gd]*
 
-cp board/$REVISION/docs/$NAME.txt $DIST/$NAME.txt
+cp $BOARD_PATH/docs/$NAME.txt $DIST/$NAME.txt
 
 
 # Pos files: Top only
@@ -40,7 +41,7 @@ kicad-cli pcb export pos \
 # kicad-cli pcb export pos \
 #     --units mm --side back --output $DIST/assembly/$NAME.bottom.pos $BOARD
 
-kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv board/$REVISION/$NAME.kicad_sch
+kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv $BOARD_PATH/$NAME.kicad_sch
 # xsltproc -o $DIST/assembly/$NAME.bom.csv \
 #     $DIST/assembly/$NAME.bom.xml
 
@@ -78,7 +79,7 @@ inkscape $DIST/assembly/$NAME-Top.svg \
 
 # rm $DIST/assembly/$NAME-Bottom.svg
 
-cp board/docs/$NAME.png $DIST/assembly/$NAME.png
+cp $BOARD_PATH/$NAME.png $DIST/assembly/$NAME.png
 
 zip -rj $DIST/$NAME-assembly.zip $DIST/assembly/*
 
